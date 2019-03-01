@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 
-function Logout() {
-    return <span>Logout</span>
-}
 
 class Login extends Component {
     constructor() {
@@ -60,6 +57,15 @@ class Login extends Component {
     }
 }
 
+function Logout(props) {
+    return (
+        <div>
+            <h3>Logged In as {props.username}</h3>
+            <button onClick={props.onClick}>Logout</button>
+        </div>
+    )
+}
+
 class App extends Component {
     constructor() {
         super()
@@ -69,28 +75,52 @@ class App extends Component {
         }
 
         this.handleLogin = this.handleLogin.bind(this)
+        this.handleLogout = this.handleLogout.bind(this)
     }
 
     handleLogin(user) {
-        console.log(user)
         const loginUrl = `${this.state.baseUrl}/api-token-auth/`
-        console.log(loginUrl)
-        console.log(user, JSON.stringify(user))
         fetch(loginUrl, {
             method: "post",
             body: JSON.stringify(user),
             headers: {"Content-Type": "application/json"}
         })
             .then(r => r.json())
-            .then(d => console.log(d))
-            .catch(e => alert(e))
+            .then(d => this.setState({
+                username: user.username,
+                token: d.token,
+                isLoggedIn: true
+            }))
+            .catch(e => {
+                alert(e)
+                this.setState({
+                    isLoggedIn: false,
+                    token: null,
+                    username: null
+                })
+            })
+    }
+
+    handleLogout() {
+        console.log("logout")
+        this.setState({
+            isLoggedIn: false,
+            token: null,
+            username: null
+        })
     }
 
     render() {
         return (
             <div>
-                <span>{this.state.isLoggedIn && <Logout />}</span>
-                <span>{!this.state.isLoggedIn && <Login onSubmit={this.handleLogin}/>}</span>
+                <div>{
+                    this.state.isLoggedIn &&
+                    <Logout
+                        username={this.state.username}
+                        onClick={this.handleLogout}
+                    />}
+                </div>
+                <div>{!this.state.isLoggedIn && <Login onSubmit={this.handleLogin}/>}</div>
             </div>
         );
     }

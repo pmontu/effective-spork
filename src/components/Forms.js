@@ -15,19 +15,29 @@ class Forms extends React.Component {
 
 	render() {
 		const forms_components = this.state.forms.map(form => {
-			let button
+			let button, username
 			if(this.props.userId === form.user)
 				button = <button onClick={() => this.props.onDesign(form)}>
 					Design
 				</button>
-			return <li key={form.id}>{form.name} {button}</li>
+			else
+				username = `${form.username}'s `
+			return <li key={form.id}>{username}{form.name} {button}</li>
 		})
 
 		const attempt_components = this.state.attempts.map(attempt => {
-			const button = <button onClick={() => this.props.onReply(attempt)}>
-				Continue
-			</button>
-			return <li key={attempt.id}>{attempt.form_name} {button}</li>
+			let button, username
+			if(attempt.user === this.props.userId)
+				button = <button onClick={() => this.props.onReply(attempt)}>
+					Fill
+				</button>
+			else {
+				button = <button onClick={() => this.props.onView(attempt)}>
+					View
+				</button>
+				username = `${attempt.username}'s `
+			}
+			return <li key={attempt.id}>{username}{attempt.form_name} {button}</li>
 		})
 		return (
 			<div>

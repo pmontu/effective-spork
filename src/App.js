@@ -6,6 +6,7 @@ import Logout from './components/Logout'
 import Forms from './components/Forms'
 import Design from './components/Design'
 import Reply from './components/Reply'
+import View from './components/View'
 
 
 class App extends Component {
@@ -15,7 +16,8 @@ class App extends Component {
             isLoggedIn: false,
             baseUrl: `http://${window.location.hostname}:8000`,
             isDesign: false,
-            isReply: false
+            isReply: false,
+            isView: false
         }
 
         this.handleLogin = this.handleLogin.bind(this)
@@ -23,7 +25,8 @@ class App extends Component {
         this.getForms = this.getForms.bind(this)
         this.handleDesign = this.handleDesign.bind(this)
         this.handleReply = this.handleReply.bind(this)
-        this.handleAttemptFieldChange = this.handleAttemptFieldChange.bind(this)
+        this.handleView = this.handleView.bind(this)
+        this.handleTextAttemptChange = this.handleTextAttemptChange.bind(this)
     }
 
     handleLogin(user) {
@@ -54,7 +57,8 @@ class App extends Component {
         this.setState({
             isLoggedIn: false,
             isDesign: false,
-            isReply: false
+            isReply: false,
+            isView: false
         })
     }
 
@@ -98,7 +102,8 @@ class App extends Component {
         this.setState({
             form: form,
             isDesign: true,
-            isReply: false
+            isReply: false,
+            isView: false
         })
     }
 
@@ -106,12 +111,53 @@ class App extends Component {
         this.setState({
             attempt: attempt,
             isDesign: false,
-            isReply: true
+            isReply: true,
+            isView: false
         })
     }
 
-    handleAttemptFieldChange() {
-        console.log("here")
+    handleView(attempt) {
+        this.setState({
+            attempt: attempt,
+            isDesign: false,
+            isReply: false,
+            isView: true
+        })
+
+    }
+
+    async handleTextAttemptChange(event, field_attempt) {
+        const textFieldDetailUrl = `${this.state.baseUrl}/attempts/${field_attempt.attempt}/fields/${field_attempt.id}/`
+
+        try {
+            const response = await fetch(textFieldDetailUrl, {
+                method: "patch",
+                body: JSON.stringify({text: event.target.value}),
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `JWT ${this.state.token}`
+                }
+            })
+            let data
+            if(response.ok)
+                data = await response.json()
+            else
+                throw new Error("Something went wrong")
+
+            this.setState(prevState => ({
+                attempt: {
+                    fields: prevState.attempt.fields.map(field => {
+                        if(field.id === data.id)
+                            return data
+                        return field
+                    })
+                }
+            }))
+        }
+        catch(err)
+        {
+            alert(err)
+        }
     }
 
     render() {
@@ -140,6 +186,7 @@ class App extends Component {
                             userId={this.state.user.id}
                             onDesign={this.handleDesign}
                             onReply={this.handleReply}
+                            onView={this.handleView}
                         />
                     }
                 </div>
@@ -152,7 +199,13 @@ class App extends Component {
                 <div>
                     {
                         this.state.isLoggedIn && this.state.isReply &&
-                        <Reply attempt={this.state.attempt} onChange={this.handleAttemptFieldChange}/>
+                        <Reply attempt={this.state.attempt} onTextChange={this.handleTextAttemptChange}/>
+                    }
+                </div>
+                <div>
+                    {
+                        this.state.isLoggedIn && this.state.isView &&
+                        <View attempt={this.state.attempt} />
                     }
                 </div>
             </div>

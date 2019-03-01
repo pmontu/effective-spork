@@ -3,14 +3,18 @@ import React from "react"
 
 function TextField(props) {
 	return (
-		<label>
-			{props.field_attempt.field.text}:
-			<input
-				type="text"
-				name={props.field_attempt.field.text}
-				placeholder={props.field_attempt.field.text}
-			/>
-		</label>
+		<div>
+			<label>
+				{props.field_attempt.field.text}:
+				<input
+					type="text"
+					name={props.field_attempt.field.text}
+					placeholder={props.field_attempt.field.text}
+					onChange={(event) => props.onChange(event, props.field_attempt)}
+					value={props.field_attempt.text}
+				/>
+			</label>
+		</div>
 	)
 }
 
@@ -37,12 +41,13 @@ class Reply extends React.Component {
 		let components
 		try {
 			components = this.props.attempt.fields.map(field_attempt => {
-				if(field_attempt.field.field === "T")
+				if(field_attempt.field.field === "T") {
 					return <TextField
 						field_attempt={field_attempt}
-						onChange={this.props.onChange}
+						onChange={this.props.onTextChange}
 						key={field_attempt.id}
 					/>
+				}
 				else if(field_attempt.field.field === "R")
 					return <ChoiceField
 						field_attempt={field_attempt}

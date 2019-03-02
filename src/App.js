@@ -165,35 +165,61 @@ class App extends Component {
         const [ event, optionId, selOptionId, attFieldId, attemptId ] = args
         const { checked } = event.target
 
-        if(checked) {
-            const attOptListUrl = `${this.state.baseUrl}/attempts/${attemptId}/fields/${attFieldId}/options/`
-            const response = await fetch(attOptListUrl, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `JWT ${this.state.token}`
-                },
-                method: "post",
-                body: JSON.stringify({ option: optionId })
-            })
-            if(!response.ok)
-                throw new Error("Something went wrong while posting option")
-            const data = await response.json()
-            this.setState(prevState => ({
-                attempt: {
-                    ...prevState.attempt,
-                    fields: prevState.attempt.fields.map(attField => {
-                        const newOpts = attField.options
-                        newOpts.push(data)
-                        return {
-                            ...attField,
-                            options: newOpts
-                        }}
-                    )}
-            }))
+        try {
+            if(checked) {
+                const attOptListUrl = `${this.state.baseUrl}/attempts/${attemptId}/fields/${attFieldId}/options/`
+                const response = await fetch(attOptListUrl, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `JWT ${this.state.token}`
+                    },
+                    method: "post",
+                    body: JSON.stringify({ option: optionId })
+                })
+                if(!response.ok)
+                    throw new Error("Something went wrong while posting option")
+                const data = await response.json()
+                this.setState(prevState => ({
+                    attempt: {
+                        ...prevState.attempt,
+                        fields: prevState.attempt.fields.map(attField => {
+                            const newOpts = attField.options
+                            newOpts.push(data)
+                            return {
+                                ...attField,
+                                options: newOpts
+                            }}
+                        )}
+                }))
+            }
+            else {
+                const attOptDetailUrl = `${this.state.baseUrl}/attempts/${attemptId}/fields/${attFieldId}/options/${selOptionId}/`
+                const response = await fetch(attOptDetailUrl, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `JWT ${this.state.token}`
+                    },
+                    method: "delete"
+                })
+                if(!response.ok)
+                    throw new Error("Something went wrong while deleting option")
+
+                this.setState(prevState => ({
+                    attempt: {
+                        ...prevState.attempt,
+                        fields: prevState.attempt.fields.map(attField => {
+                            const newOpts = attField.options.filter(attOpt => attOpt.id !== selOptionId)
+                            return {
+                                ...attField,
+                                options: newOpts
+                            }
+                        })
+                    }
+                }))
+            }
         }
-        else {
-            const attOptDetailUrl = `${this.state.baseUrl}/attempts/${attemptId}/fields/${attFieldId}/options/${selOptionId}/`
-            // method = "delete"
+        catch(err) {
+            alert(err)
         }
     }
 

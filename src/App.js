@@ -28,6 +28,8 @@ class App extends Component {
         this.handleView = this.handleView.bind(this)
         this.handleTextAttemptChange = this.handleTextAttemptChange.bind(this)
         this.handleRadioAttemptChange = this.handleRadioAttemptChange.bind(this)
+        this.handleDesignTextSubmit = this.handleDesignTextSubmit.bind(this)
+        this.handleDesignOptionSubmit = this.handleDesignOptionSubmit.bind(this)
     }
 
     handleLogin(user) {
@@ -223,6 +225,79 @@ class App extends Component {
         }
     }
 
+    async handleDesignTextSubmit(event, fieldType, text, formId) {
+        try {
+            const postFieldUrl = `${this.state.baseUrl}/forms/${formId}/fields/`
+            const response = await fetch(postFieldUrl, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `JWT ${this.state.token}`
+                },
+                method: "post",
+                body: JSON.stringify({ text: text, field: fieldType })
+            })
+
+            if(!response.ok)
+                throw new Error("Something went wrong while creating field in form")
+
+            const data = await response.json()
+            this.setState(prevState => {
+                const newFields = prevState.form.fields
+                newFields.push(data)
+                return {
+                    form: {
+                        ...prevState.form,
+                        "fields": newFields
+                    }
+                }
+            })
+        }
+        catch(err) {
+            alert(err)
+        }
+    }
+
+    async handleDesignOptionSubmit(args) {
+        try {
+            const { fieldId, value, formId } = args
+            const postOptUrl = `${this.state.baseUrl}/forms/${formId}/fields/${fieldId}/options/`
+            const response = await fetch(postOptUrl, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `JWT ${this.state.token}`
+                },
+                method: "post",
+                body: JSON.stringify({ value: value })
+            })
+
+            if(!response.ok)
+                throw new Error("Something went wrong while creating option in form field")
+
+            const data = await response.json()
+            this.setState(prevState => {
+                return {
+                    form: {
+                        ...prevState.form,
+                        "fields": prevState.form.fields.map(field => {
+                            if(field.id === fieldId){
+                                let newOptions = field.options
+                                newOptions.push(data)
+                                return {
+                                    ...field,
+                                    options: newOptions
+                                }
+                            }
+                            return field
+                        })
+                    }
+                }
+            })
+        }
+        catch(err) {
+            alert(err)
+        }
+    }
+
     render() {
         return (
             <div>
@@ -256,7 +331,11 @@ class App extends Component {
                 <div>
                     {
                         this.state.isLoggedIn && this.state.isDesign &&
-                        <Design form={this.state.form}/>
+                        <Design
+                            form={this.state.form}
+                            onTextSubmit={this.handleDesignTextSubmit}
+                            onOptionSubmit={this.handleDesignOptionSubmit}
+                        />
                     }
                 </div>
                 <div>

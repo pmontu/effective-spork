@@ -8,7 +8,7 @@ function TextField(props) {
 			<input
 				type="text"
 				name={props.attField.field.text}
-				placeholder={props.attField.field.text}
+				placeholder="answer"
 				onChange={(event) => props.onChange(event, props.attField)}
 				value={props.attField.text}
 			/>

@@ -1,4 +1,5 @@
 import React from 'react'
+import 'bulma/css/bulma.css'
 
 
 class Login extends React.Component {
@@ -26,31 +27,35 @@ class Login extends React.Component {
 
     render() {
         return (
-            <div>
-                <h3>Login</h3>
+            <div className="card">
+                <div className="card-content">
+                    <h3 className="title">Login</h3>
 
-                <form onSubmit={this.handleSubmit}>
-                    <input
-                        type="text"
-                        required={true}
-                        name="username"
-                        placeholder="Username"
-                        value={this.state.username}
-                        onChange={this.handleChange}
-                    />
-                    <br />
-                    <input
-                        type="password"
-                        required={true}
-                        name="password"
-                        placeholder="Password"
-                        value={this.state.password}
-                        onChange={this.handleChange}
-                    />
-                    <br />
+                    <form onSubmit={this.handleSubmit}>
+                        <input
+                            className="input is-small"
+                            type="text"
+                            required={true}
+                            name="username"
+                            placeholder="Username"
+                            value={this.state.username}
+                            onChange={this.handleChange}
+                        />
+                        <br />
+                        <input
+                            className="input is-small"
+                            type="password"
+                            required={true}
+                            name="password"
+                            placeholder="Password"
+                            value={this.state.password}
+                            onChange={this.handleChange}
+                        />
+                        <br />
 
-                    <button>Submit</button>
-                </form>
+                        <button className="button is-small is-primary">Submit</button>
+                    </form>
+                </div>
             </div>
         )
     }

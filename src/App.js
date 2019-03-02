@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import './App.css';
+import React, { Component } from 'react'
+import './App.css'
+import 'bulma/css/bulma.css'
 
 import Login from './components/Login'
 import Logout from './components/Logout'
@@ -369,62 +370,80 @@ class App extends Component {
     render() {
         return (
             <div>
-                <div>
-                    {
-                        this.state.isLoggedIn &&
-                        <Logout
-                            username={this.state.username}
-                            onClick={this.handleLogout}
-                        />
-                    }
-                </div>
-                <div>
-                    {
-                        !this.state.isLoggedIn &&
-                        <Login onSubmit={this.handleLogin}/>
-                    }
-                </div>
-                <div>
-                    {
-                        this.state.isLoggedIn &&
-                        <Forms
-                            forms={this.state.forms}
-                            attempts={this.state.attempts}
-                            onLoad={this.getForms}
-                            userId={this.state.user.id}
-                            onDesign={this.handleDesign}
-                            onReply={this.handleReply}
-                            onView={this.handleView}
-                            onFillInit={this.handleFillInit}
-                            onFormCreate={this.handleFormCreate}
-                        />
-                    }
-                </div>
-                <div>
-                    {
-                        this.state.isLoggedIn && this.state.isDesign &&
-                        <Design
-                            form={this.state.form}
-                            onTextSubmit={this.handleDesignTextSubmit}
-                            onOptionSubmit={this.handleDesignOptionSubmit}
-                        />
-                    }
-                </div>
-                <div>
-                    {
-                        this.state.isLoggedIn && this.state.isReply &&
-                        <Reply
-                            attempt={this.state.attempt}
-                            onTextChange={this.handleTextAttemptChange}
-                            onRadioChange={this.handleRadioAttemptChange}
-                        />
-                    }
-                </div>
-                <div>
-                    {
-                        this.state.isLoggedIn && this.state.isView &&
-                        <View attempt={this.state.attempt} />
-                    }
+                <section className="hero is-primary">
+                    <div className="hero-body">
+                        <div className="container">
+                            <h1 className="title is-1">Form Builder</h1>
+                            <h2 className="subtitle">Build and Survey Forms</h2>
+                        </div>
+                    </div>
+                </section>
+
+                <div className="columns">
+                    <div className="column">
+                        <div>
+                            {
+                                this.state.isLoggedIn &&
+                                <Logout
+                                    username={this.state.username}
+                                    onClick={this.handleLogout}
+                                />
+                            }
+                        </div>
+                    </div>
+                    <div className="column">
+                        <div>
+                            {
+                                !this.state.isLoggedIn &&
+                                <Login onSubmit={this.handleLogin}/>
+                            }
+                        </div>
+                        <div>
+                            {
+                                this.state.isLoggedIn &&
+                                <Forms
+                                    forms={this.state.forms}
+                                    attempts={this.state.attempts}
+                                    onLoad={this.getForms}
+                                    userId={this.state.user.id}
+                                    onDesign={this.handleDesign}
+                                    onReply={this.handleReply}
+                                    onView={this.handleView}
+                                    onFillInit={this.handleFillInit}
+                                    onFormCreate={this.handleFormCreate}
+                                />
+                            }
+                        </div>
+                    </div>
+                    <div className="column">
+                        <div>
+                            {
+                                this.state.isLoggedIn && this.state.isDesign &&
+                                <Design
+                                    form={this.state.form}
+                                    onTextSubmit={this.handleDesignTextSubmit}
+                                    onOptionSubmit={this.handleDesignOptionSubmit}
+                                />
+                            }
+                        </div>
+                        <div>
+                            {
+                                this.state.isLoggedIn && this.state.isReply &&
+                                <Reply
+                                    attempt={this.state.attempt}
+                                    onTextChange={this.handleTextAttemptChange}
+                                    onRadioChange={this.handleRadioAttemptChange}
+                                />
+                            }
+                        </div>
+                        <div>
+                            {
+                                this.state.isLoggedIn && this.state.isView &&
+                                <View attempt={this.state.attempt} />
+                            }
+                        </div>
+                    </div>
+                    <div className="column"></div>
                 </div>
             </div>
         );

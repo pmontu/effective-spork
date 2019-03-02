@@ -1,5 +1,52 @@
 import React from 'react'
 
+
+class TextInputForm extends React.Component {
+	constructor() {
+		super()
+		this.state = {
+			text: ""
+		}
+
+		this.handleChange = this.handleChange.bind(this)
+		this.handleSubmit = this.handleSubmit.bind(this)
+	}
+
+	handleChange(event) {
+		const { name, value } = event.target
+		this.setState({
+			[name]: value
+		})
+	}
+
+	handleSubmit(event) {
+		event.preventDefault()
+		this.props.onSubmit({
+			event,
+			text: this.state.text,
+			fieldType: this.props.fieldType
+		})
+		this.setState({ text: "" })
+	}
+
+	render() {
+		return (
+			<form onSubmit={this.handleSubmit}>
+				<input
+					type="text"
+					placeholder="Title"
+					value={this.state.text}
+					name="text"
+					onChange={this.handleChange}
+					required={true}
+				/>
+				<button>Add {this.props.fieldType === "T" ? "Textbox Question" : "Checkbox Question"}</button>
+			</form>
+		)
+	}
+}
+
+
 class Option extends React.Component {
 	constructor() {
 		super()
@@ -40,6 +87,7 @@ class Option extends React.Component {
 							value={this.state.value}
 							name="value"
 							onChange={this.handleChange}
+							required={true}
 						/>
 						<button>Add Option</button>
 					</label>
@@ -92,53 +140,31 @@ class Design extends React.Component {
 			alert(err)
 		}
 
-		const textForm = <form onSubmit={
-			(event) => {
-				event.preventDefault()
-				this.props.onSubmit(
-					event,
-					"T",
-					this.state.text,
-					this.props.form.id
-				)
-			}
-		}>
-			<input
-				type="text"
-				placeholder="Title"
-				value={this.state.text}
-				name="text"
-				onChange={this.handleChange}
-			/>
-			<button>Add Textbox</button>
-		</form>
-
-		const choiceForm = <form onSubmit={
-			(event) => {
-				event.preventDefault()
-				this.props.onTextSubmit(
-					event,
-					"R",
-					this.state.text,
-					this.props.form.id
-				)
-			}
-		}>
-			<input
-				type="text"
-				placeholder="Title"
-				value={this.state.text}
-				name="text"
-				onChange={this.handleChange}
-			/>
-			<button>Add Checkboxes</button>
-		</form>
-
-		let button
-		if(this.state.isText)
+		let button, input
+		if(this.state.isText) {
 			button = <button onClick={() => this.setState({isText: false})}>Checkboxes</button>
-		else
+			input = <TextInputForm
+				onSubmit={
+					(args) => {
+						args["formId"] = this.props.form.id
+						this.props.onTextSubmit(args)
+					}
+				}
+				fieldType="T"
+			/>
+		}
+		else {
 			button = <button onClick={() => this.setState({isText: true})}>TextBox</button>
+			input = <TextInputForm
+				onSubmit={
+					(args) => {
+						args["formId"] = this.props.form.id
+						this.props.onTextSubmit(args)
+					}
+				}
+				fieldType="R"
+			/>
+		}
 
 		return (
 			<div>
@@ -146,9 +172,10 @@ class Design extends React.Component {
 				<ul>
 					{components}
 				</ul>
-				{button}
+				{components.length === 0 ? "Add Textboxes or Checkboxes to continue" : null}
 				<br />
-				{this.state.isText ? textForm : choiceForm}
+				{button}
+				{input}
 			</div>
 		)
 	}

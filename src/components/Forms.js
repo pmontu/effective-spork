@@ -1,31 +1,62 @@
 import React from 'react'
 
-class Forms extends React.Component {
+
+class CreateForm extends React.Component {
 	constructor() {
 		super()
 		this.state = {
-			forms: [],
-			attempts: []
+			name: ""
 		}
+		this.handleChange = this.handleChange.bind(this)
+		this.handleSubmit = this.handleSubmit.bind(this)
 	}
-	async componentDidMount() {
-		const {forms, attempts} = await this.props.onLoad()
-		this.setState({ forms: forms, attempts: attempts })
+
+	handleChange(event) {
+		const {name, value} = event.target
+		this.setState({
+			[name]: value
+		})
+	}
+
+	handleSubmit(event) {
+		event.preventDefault()
+		this.props.onCreateForm({ event, name: this.state.name })
 	}
 
 	render() {
-		const forms_components = this.state.forms.map(form => {
-			let button, username
+		return (
+			<form onSubmit={this.handleSubmit}>
+				<input
+					type="text"
+					name="name"
+					value={this.state.name}
+					onChange={this.handleChange}
+					required={true}
+					placeholder="Form Title"
+				/>
+				<button>Create New Form</button>
+			</form>
+		)
+	}
+}
+
+
+class Forms extends React.Component {
+	render() {
+		const forms_components = this.props.forms.map(form => {
+			let button, username, fill
 			if(this.props.userId === form.user)
 				button = <button onClick={() => this.props.onDesign(form)}>
 					Design
 				</button>
-			else
+			else {
 				username = `${form.username}'s `
-			return <li key={form.id}>{username}{form.name} {button}</li>
+				fill = <button onClick={() => this.props.onFillInit(form)}>Create Attempt</button>
+			}
+			return <li key={form.id}>{username}{form.name} {button} {fill}</li>
 		})
 
-		const attempt_components = this.state.attempts.map(attempt => {
+		const attempt_components = this.props.attempts.map(attempt => {
 			let button, username
 			if(attempt.user === this.props.userId)
 				button = <button onClick={() => this.props.onReply(attempt)}>
@@ -41,15 +72,18 @@ class Forms extends React.Component {
 		})
 		return (
 			<div>
-				<h2>Forms</h2>
-				<h4>All Forms</h4>
+				<h4>Design Forms</h4>
 				<ul>
 					{forms_components || "Loading..."}
 				</ul>
-				<h4>Forms Submissions</h4>
+				{forms_components.length === 0 ? "No Records" : null}
+				<CreateForm onCreateForm={this.props.onFormCreate} />
+
+				<h4>Submissions</h4>
 				<ul>
 					{attempt_components || "Loading..."}
 				</ul>
+				{attempt_components.length === 0 ? "No Records" : null}
 			</div>
 		)
 	}

@@ -17,7 +17,9 @@ class App extends Component {
             baseUrl: `http://${window.location.hostname}:8000`,
             isDesign: false,
             isReply: false,
-            isView: false
+            isView: false,
+            forms: [],
+            attempts: []
         }
 
         this.handleLogin = this.handleLogin.bind(this)
@@ -30,6 +32,8 @@ class App extends Component {
         this.handleRadioAttemptChange = this.handleRadioAttemptChange.bind(this)
         this.handleDesignTextSubmit = this.handleDesignTextSubmit.bind(this)
         this.handleDesignOptionSubmit = this.handleDesignOptionSubmit.bind(this)
+        this.handleFillInit = this.handleFillInit.bind(this)
+        this.handleFormCreate = this.handleFormCreate.bind(this)
     }
 
     handleLogin(user) {
@@ -44,12 +48,15 @@ class App extends Component {
                     return r.json()
                 throw new Error("Something went wrong.")
             })
-            .then(d => this.setState({
-                username: user.username,
-                token: d.token,
-                isLoggedIn: true,
-                user: {id: d.user.id}
-            }))
+            .then(d => {
+                this.setState({
+                    username: user.username,
+                    token: d.token,
+                    isLoggedIn: true,
+                    user: {id: d.user.id}
+                })
+                this.getForms()
+            })
             .catch(e => {
                 alert(e)
                 this.setState({ isLoggedIn: false })
@@ -98,7 +105,7 @@ class App extends Component {
         catch(err) {
             alert(err)
         }
-        return {forms: forms, attempts: attempts}
+        this.setState({ forms: forms, attempts: attempts })
     }
 
     handleDesign(form) {
@@ -149,6 +156,7 @@ class App extends Component {
 
             this.setState(prevState => ({
                 attempt: {
+                    ...prevState.attempt,
                     fields: prevState.attempt.fields.map(field => {
                         if(field.id === data.id)
                             return data
@@ -225,8 +233,9 @@ class App extends Component {
         }
     }
 
-    async handleDesignTextSubmit(event, fieldType, text, formId) {
+    async handleDesignTextSubmit(args) {
         try {
+            const { fieldType, text, formId } = args
             const postFieldUrl = `${this.state.baseUrl}/forms/${formId}/fields/`
             const response = await fetch(postFieldUrl, {
                 headers: {
@@ -298,6 +307,65 @@ class App extends Component {
         }
     }
 
+    async handleFillInit(form) {
+        try {
+            const postAttempt = `${this.state.baseUrl}/attempts/`
+            const response = await fetch(postAttempt, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `JWT ${this.state.token}`
+                },
+                method: "post",
+                body: JSON.stringify({ form: form.id })
+            })
+
+            if(!response.ok)
+                throw new Error("Something went wrong while creating attempt")
+
+            const data = await response.json()
+            this.setState(prevState => {
+                const newAttempts = prevState.attempts
+                newAttempts.push(data)
+                return { attempts: newAttempts }
+            })
+
+            this.handleReply(data)
+        }
+        catch(err) {
+            alert(err)
+        }
+    }
+
+    async handleFormCreate(args) {
+        try {
+            const { name } = args
+            const postForm = `${this.state.baseUrl}/forms/`
+            const response = await fetch(postForm, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `JWT ${this.state.token}`
+                },
+                method: "post",
+                body: JSON.stringify({ name: name })
+            })
+
+            if(!response.ok)
+                throw new Error("Something went wrong while creating the form")
+
+            const data = await response.json()
+            this.setState(prevState => {
+                const newForms = prevState.forms
+                newForms.push(data)
+                return { forms: newForms }
+            })
+
+            this.handleDesign(data)
+        }
+        catch(err) {
+            alert(err)
+        }
+    }
+
     render() {
         return (
             <div>
@@ -320,11 +388,15 @@ class App extends Component {
                     {
                         this.state.isLoggedIn &&
                         <Forms
+                            forms={this.state.forms}
+                            attempts={this.state.attempts}
                             onLoad={this.getForms}
                             userId={this.state.user.id}
                             onDesign={this.handleDesign}
                             onReply={this.handleReply}
                             onView={this.handleView}
+                            onFillInit={this.handleFillInit}
+                            onFormCreate={this.handleFormCreate}
                         />
                     }
                 </div>

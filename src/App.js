@@ -27,6 +27,7 @@ class App extends Component {
         this.handleReply = this.handleReply.bind(this)
         this.handleView = this.handleView.bind(this)
         this.handleTextAttemptChange = this.handleTextAttemptChange.bind(this)
+        this.handleRadioAttemptChange = this.handleRadioAttemptChange.bind(this)
     }
 
     handleLogin(user) {
@@ -160,6 +161,42 @@ class App extends Component {
         }
     }
 
+    async handleRadioAttemptChange(...args) {
+        const [ event, optionId, selOptionId, attFieldId, attemptId ] = args
+        const { checked } = event.target
+
+        if(checked) {
+            const attOptListUrl = `${this.state.baseUrl}/attempts/${attemptId}/fields/${attFieldId}/options/`
+            const response = await fetch(attOptListUrl, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `JWT ${this.state.token}`
+                },
+                method: "post",
+                body: JSON.stringify({ option: optionId })
+            })
+            if(!response.ok)
+                throw new Error("Something went wrong while posting option")
+            const data = await response.json()
+            this.setState(prevState => ({
+                attempt: {
+                    ...prevState.attempt,
+                    fields: prevState.attempt.fields.map(attField => {
+                        const newOpts = attField.options
+                        newOpts.push(data)
+                        return {
+                            ...attField,
+                            options: newOpts
+                        }}
+                    )}
+            }))
+        }
+        else {
+            const attOptDetailUrl = `${this.state.baseUrl}/attempts/${attemptId}/fields/${attFieldId}/options/${selOptionId}/`
+            // method = "delete"
+        }
+    }
+
     render() {
         return (
             <div>
@@ -199,7 +236,11 @@ class App extends Component {
                 <div>
                     {
                         this.state.isLoggedIn && this.state.isReply &&
-                        <Reply attempt={this.state.attempt} onTextChange={this.handleTextAttemptChange}/>
+                        <Reply
+                            attempt={this.state.attempt}
+                            onTextChange={this.handleTextAttemptChange}
+                            onRadioChange={this.handleRadioAttemptChange}
+                        />
                     }
                 </div>
                 <div>

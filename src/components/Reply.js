@@ -3,34 +3,36 @@ import React from "react"
 
 function TextField(props) {
 	return (
-		<div>
-			<label>
-				{props.field_attempt.field.text}:
-				<input
-					type="text"
-					name={props.field_attempt.field.text}
-					placeholder={props.field_attempt.field.text}
-					onChange={(event) => props.onChange(event, props.field_attempt)}
-					value={props.field_attempt.text}
-				/>
-			</label>
-		</div>
+		<label>
+			{props.attField.field.text}:
+			<input
+				type="text"
+				name={props.attField.field.text}
+				placeholder={props.attField.field.text}
+				onChange={(event) => props.onChange(event, props.attField)}
+				value={props.attField.text}
+			/>
+		</label>
 	)
 }
 
 function ChoiceField(props) {
-	const options = props.field_attempt.field.options.map(option => {
-		return (
-			<div key={option.id}>
-				<label><input
-					type="checkbox"
-				/>{option.value}</label>
-			</div>
-		)
+	const selOptIds = props.attField.options.map(selOptions => selOptions.option)
+	const options = props.attField.field.options.map(option => {
+		const isChecked = selOptIds.includes(option.id)
+		const selOptionId = isChecked ? props.attField.options.find(selOpt=>selOpt.option===option.id).id : null
+		return <label key={option.id}>
+			<input
+				type="checkbox"
+				checked={isChecked}
+				onChange={(event) => props.onChange(event, option.id, selOptionId, props.attField.id)}
+			/>
+			{option.value}
+		</label>
 	})
 	return (
 		<div>
-			{props.field_attempt.field.text}:{options}
+			{props.attField.field.text}:{options}
 		</div>
 	)
 }
@@ -40,19 +42,32 @@ class Reply extends React.Component {
 	render() {
 		let components
 		try {
-			components = this.props.attempt.fields.map(field_attempt => {
-				if(field_attempt.field.field === "T") {
-					return <TextField
-						field_attempt={field_attempt}
-						onChange={this.props.onTextChange}
-						key={field_attempt.id}
-					/>
+			components = this.props.attempt.fields.map(attField => {
+				if(attField.field.field === "T") {
+					return <li key={attField.id}>
+						<TextField
+							attField={attField}
+							onChange={this.props.onTextChange}
+						/>
+					</li>
 				}
-				else if(field_attempt.field.field === "R")
-					return <ChoiceField
-						field_attempt={field_attempt}
-						key={field_attempt.id}
-					/>
+				else if(attField.field.field === "R")
+					return <li key={attField.id}>
+						<ChoiceField attField={attField} onChange={
+							(
+								event,
+								optionId,
+								selOptionId,
+								attFieldId
+							) => this.props.onRadioChange(
+								event,
+								optionId,
+								selOptionId,
+								attFieldId,
+								this.props.attempt.id
+							)
+						}/>
+					</li>
 				else
 					throw new Error("Unknown field type.")
 			})
@@ -64,7 +79,9 @@ class Reply extends React.Component {
 			<div>
 				<h4>Attempt Form {this.props.attempt.form_name}</h4>
 				<form>
-					{components}
+					<ul>
+						{components}
+					</ul>
 				</form>
 			</div>
 		)

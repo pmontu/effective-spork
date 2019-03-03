@@ -196,9 +196,9 @@ class Design extends React.Component {
                     </header>
                     <div className="card-content">
                         <div className="content">
-                            <ul>
+                            <ol>
                                 {components}
-                            </ul>
+                            </ol>
                             {components.length === 0 ? "Add Textboxes or Checkboxes to continue" : null}
                             <br />
                         </div>

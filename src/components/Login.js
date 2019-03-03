@@ -32,28 +32,41 @@ class Login extends React.Component {
                     <h3 className="title">Login</h3>
 
                     <form onSubmit={this.handleSubmit}>
-                        <input
-                            className="input is-small"
-                            type="text"
-                            required={true}
-                            name="username"
-                            placeholder="Username"
-                            value={this.state.username}
-                            onChange={this.handleChange}
-                        />
-                        <br />
-                        <input
-                            className="input is-small"
-                            type="password"
-                            required={true}
-                            name="password"
-                            placeholder="Password"
-                            value={this.state.password}
-                            onChange={this.handleChange}
-                        />
-                        <br />
+                        <div className="field">
+                            <label className="label">Username</label>
+                            <div className="control">
+                                <input
+                                    className="input"
+                                    type="text"
+                                    required={true}
+                                    name="username"
+                                    placeholder="Username"
+                                    value={this.state.username}
+                                    onChange={this.handleChange}
+                                />
+                            </div>
+                        </div>
 
-                        <button className="button is-small is-primary">Submit</button>
+                        <div className="field">
+                            <label className="label">Password</label>
+                            <div className="control">
+                                <input
+                                    className="input"
+                                    type="password"
+                                    required={true}
+                                    name="password"
+                                    placeholder="Password"
+                                    value={this.state.password}
+                                    onChange={this.handleChange}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="field is-grouped">
+                            <div className="control">
+                                <button className="button is-small is-link">Submit</button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>

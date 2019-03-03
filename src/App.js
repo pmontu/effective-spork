@@ -3,7 +3,6 @@ import './App.css'
 import 'bulma/css/bulma.css'
 
 import Login from './components/Login'
-import Logout from './components/Logout'
 import Forms from './components/Forms'
 import Design from './components/Design'
 import Reply from './components/Reply'
@@ -19,6 +18,7 @@ class App extends Component {
             isDesign: false,
             isReply: false,
             isView: false,
+            isForms: true,
             forms: [],
             attempts: []
         }
@@ -29,6 +29,7 @@ class App extends Component {
         this.handleDesign = this.handleDesign.bind(this)
         this.handleReply = this.handleReply.bind(this)
         this.handleView = this.handleView.bind(this)
+        this.handleForms = this.handleForms.bind(this)
         this.handleTextAttemptChange = this.handleTextAttemptChange.bind(this)
         this.handleRadioAttemptChange = this.handleRadioAttemptChange.bind(this)
         this.handleDesignTextSubmit = this.handleDesignTextSubmit.bind(this)
@@ -69,7 +70,8 @@ class App extends Component {
             isLoggedIn: false,
             isDesign: false,
             isReply: false,
-            isView: false
+            isView: false,
+            isForms: false
         })
     }
 
@@ -114,7 +116,8 @@ class App extends Component {
             form: form,
             isDesign: true,
             isReply: false,
-            isView: false
+            isView: false,
+            isForms: false
         })
     }
 
@@ -123,7 +126,8 @@ class App extends Component {
             attempt: attempt,
             isDesign: false,
             isReply: true,
-            isView: false
+            isView: false,
+            isForms: false
         })
     }
 
@@ -132,9 +136,19 @@ class App extends Component {
             attempt: attempt,
             isDesign: false,
             isReply: false,
-            isView: true
+            isView: true,
+            isForms: false
         })
+    }
 
+    handleForms(attempt) {
+        this.setState({
+            attempt: attempt,
+            isDesign: false,
+            isReply: false,
+            isView: false,
+            isForms: true
+        })
     }
 
     async handleTextAttemptChange(event, field_attempt) {
@@ -337,9 +351,8 @@ class App extends Component {
         }
     }
 
-    async handleFormCreate(args) {
+    async handleFormCreate(params) {
         try {
-            const { name } = args
             const postForm = `${this.state.baseUrl}/forms/`
             const response = await fetch(postForm, {
                 headers: {
@@ -347,7 +360,7 @@ class App extends Component {
                     "Authorization": `JWT ${this.state.token}`
                 },
                 method: "post",
-                body: JSON.stringify({ name: name })
+                body: JSON.stringify(params)
             })
 
             if(!response.ok)
@@ -374,24 +387,29 @@ class App extends Component {
                     <div className="hero-body">
                         <div className="container">
                             <h1 className="title is-1">Form Builder</h1>
-                            <h2 className="subtitle">Build and Survey Forms</h2>
+                            <h2 className="subtitle">Build Forms and Fill Forms</h2>
                         </div>
                     </div>
                 </section>
 
                 <div className="columns">
                     <div className="column">
-                        <div>
-                            {
-                                this.state.isLoggedIn &&
-                                <Logout
-                                    username={this.state.username}
+                        {
+                            this.state.isLoggedIn &&
+                            <div>
+                                <button
                                     onClick={this.handleLogout}
-                                />
-                            }
-                        </div>
+                                    className="button is-fullwidth"
+                                >Logout {this.state.username}</button>
+
+                                <button
+                                    onClick={this.handleForms}
+                                    className="button is-fullwidth"
+                                >Forms</button>
+                            </div>
+                        }
                     </div>
-                    <div className="column">
+                    <div className="column is-three-quarters">
                         <div>
                             {
                                 !this.state.isLoggedIn &&
@@ -400,7 +418,7 @@ class App extends Component {
                         </div>
                         <div>
                             {
-                                this.state.isLoggedIn &&
+                                this.state.isLoggedIn && this.state.isForms &&
                                 <Forms
                                     forms={this.state.forms}
                                     attempts={this.state.attempts}
@@ -414,8 +432,6 @@ class App extends Component {
                                 />
                             }
                         </div>
-                    </div>
-                    <div className="column">
                         <div>
                             {
                                 this.state.isLoggedIn && this.state.isDesign &&

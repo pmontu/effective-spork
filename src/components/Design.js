@@ -49,7 +49,7 @@ class TextInputForm extends React.Component {
                 </div>
 
                 <div className="field">
-                    <label className="label">Question</label>
+                    <label className="label">{this.state.isText ? "Text" : "Choice"} Question</label>
                     <div className="control">
                         <input
                             className="input"
@@ -102,21 +102,40 @@ class Option extends React.Component {
     }
 
     render() {
-        const options = this.props.options.map(opt => <span key={opt.id}>{opt.value} </span>)
+        const options = this.props.options.map(opt => <li key={opt.id}>{opt.value} </li>)
         return (
             <li>
                 <form onSubmit={this.handleSubmit}>
+                    Choice Question:
                     <label>
-                        {this.props.field.text}: {options}
-                        <input
-                            type="text"
-                            placeholder="Title"
-                            value={this.state.value}
-                            name="value"
-                            onChange={this.handleChange}
-                            required={true}
-                        />
-                        <button>Add Option</button>
+                        <strong>{this.props.field.text}</strong>
+                        <br />
+
+                        <ul>
+                            {options}
+                        </ul>
+                        {options.length === 0 ? "No options added yet" : null}
+
+                        <div className="field">
+                            <label className="label">Option</label>
+                            <div className="control">
+                                <input
+                                    className="input"
+                                    type="text"
+                                    placeholder="Choice"
+                                    value={this.state.value}
+                                    name="value"
+                                    onChange={this.handleChange}
+                                    required={true}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="field is-grouped">
+                            <div className="control">
+                                <button className="button is-small is-link">Add</button>
+                            </div>
+                        </div>
                     </label>
                 </form>
             </li>
@@ -146,7 +165,7 @@ class Design extends React.Component {
         try {
             components = this.props.form.fields.map(field => {
                 if(field.field === "T")
-                    return <li key={field.id}><label>{field.text}</label></li>
+                    return <li key={field.id}>Text Question: <strong>{field.text}</strong></li>
                 else if(field.field === "R")
                     return <Option
                         key={field.id}
@@ -169,12 +188,22 @@ class Design extends React.Component {
 
         return (
             <div>
-                <h4>Design {this.props.form.name} Form</h4>
-                <ul>
-                    {components}
-                </ul>
-                {components.length === 0 ? "Add Textboxes or Checkboxes to continue" : null}
-                <br />
+                <div className="card">
+                    <header className="card-header">
+                        <p className="card-header-title">
+                            Design Form: <strong>{this.props.form.name}</strong>
+                        </p>
+                    </header>
+                    <div className="card-content">
+                        <div className="content">
+                            <ul>
+                                {components}
+                            </ul>
+                            {components.length === 0 ? "Add Textboxes or Checkboxes to continue" : null}
+                            <br />
+                        </div>
+                    </div>
+                </div>
 
                 <div className="card">
                     <header className="card-header">

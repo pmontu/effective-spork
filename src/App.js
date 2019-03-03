@@ -108,7 +108,7 @@ class App extends Component {
         catch(err) {
             alert(err)
         }
-        this.setState({ forms: forms, attempts: attempts })
+        this.setState({ forms: forms, attempts: attempts, isForms: true })
     }
 
     handleDesign(form) {

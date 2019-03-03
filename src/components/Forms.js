@@ -79,7 +79,7 @@ class Forms extends React.Component {
 			if(this.props.userId === form.user) {
 				design = <button
 					onClick={() => this.props.onDesign(form)}
-					className="card-footer-item"
+					className="button"
 				>
 					Design
 				</button>
@@ -89,8 +89,8 @@ class Forms extends React.Component {
 				username = form.username
 				fill = <button
 					onClick={() => this.props.onFillInit(form)}
-					className="card-footer-item"
-				>Create Attempt</button>
+					className="button"
+				>Fill</button>
 				design = "N.A."
 			}
 			return (
@@ -108,14 +108,14 @@ class Forms extends React.Component {
 		const attempt_components = this.props.attempts.map(attempt => {
 			let fill, username, view
 			if(attempt.user === this.props.userId) {
-				fill = <button onClick={() => this.props.onReply(attempt)}>
+				fill = <button onClick={() => this.props.onReply(attempt)} className="button">
 					Fill
 				</button>
 				view = "N.A."
 				username = "Me"
 			}
 			else {
-				view = <button onClick={() => this.props.onView(attempt)}>
+				view = <button onClick={() => this.props.onView(attempt)} className="button">
 					View
 				</button>
 				username = attempt.username

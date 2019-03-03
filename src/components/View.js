@@ -24,7 +24,7 @@ class View extends React.Component {
                             Options Selected:
                             <ul>
                                 {selectedOptions}
-                                {selectedOptions.length === 0 ? <li>No options selected</li> : null}
+                                {selectedOptions.length === 0 ? <li style={styles.answer}>No options selected</li> : null}
                             </ul>
 
                         </li>

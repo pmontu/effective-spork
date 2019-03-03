@@ -3,16 +3,19 @@ import React from "react"
 
 function TextField(props) {
 	return (
-		<label>
-			{props.attField.field.text}:
-			<input
-				type="text"
-				name={props.attField.field.text}
-				placeholder="answer"
-				onChange={(event) => props.onChange(event, props.attField)}
-				value={props.attField.text}
-			/>
-		</label>
+        <div className="field">
+            <label className="label">{props.attField.field.text}: </label>
+            <div className="control">
+    			<input
+                    className="input"
+    				type="text"
+    				name={props.attField.field.text}
+    				placeholder="Answer"
+    				onChange={(event) => props.onChange(event, props.attField)}
+    				value={props.attField.text}
+    			/>
+            </div>
+        </div>
 	)
 }
 
@@ -21,18 +24,24 @@ function ChoiceField(props) {
 	const options = props.attField.field.options.map(option => {
 		const isChecked = selOptIds.includes(option.id)
 		const selOptionId = isChecked ? props.attField.options.find(selOpt=>selOpt.option===option.id).id : null
-		return <label key={option.id}>
-			<input
-				type="checkbox"
-				checked={isChecked}
-				onChange={(event) => props.onChange(event, option.id, selOptionId, props.attField.id)}
-			/>
-			{option.value}
-		</label>
+		return (
+            <div class="field" key={option.id}>
+                <div class="control">
+                    <label class="checkbox">
+                        <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={(event) => props.onChange(event, option.id, selOptionId, props.attField.id)}
+                        />
+                        {option.value}
+                    </label>
+                </div>
+            </div>
+        )
 	})
 	return (
 		<div>
-			{props.attField.field.text}:{options}
+			<strong>{props.attField.field.text}:</strong> {options}
 		</div>
 	)
 }
@@ -77,12 +86,24 @@ class Reply extends React.Component {
 		}
 		return (
 			<div>
-				<h4>Attempt Form {this.props.attempt.form_name}</h4>
-				<form>
-					<ul>
-						{components}
-					</ul>
-				</form>
+                <div className="card">
+                    <header className="card-header">
+                        <p className="card-header-title">
+                            Fill Form <strong>{this.props.attempt.form_name}</strong>
+                        </p>
+                    </header>
+                    <div className="card-content">
+                        <div className="content">
+                            <form>
+                                <ol>
+                                    {components}
+                                </ol>
+                                {components.length === 0 ? "No Fields have been added to this form" : null}
+                                <br />
+                            </form>
+                        </div>
+                    </div>
+                </div>
 			</div>
 		)
 	}

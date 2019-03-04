@@ -156,7 +156,7 @@ class App extends Component {
 
         try {
             const response = await fetch(textFieldDetailUrl, {
-                method: "patch",
+                method: "put",
                 body: JSON.stringify({text: event.target.value}),
                 headers: {
                     "Content-Type": "application/json",

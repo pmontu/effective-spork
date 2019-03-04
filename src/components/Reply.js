@@ -25,9 +25,9 @@ function ChoiceField(props) {
 		const isChecked = selOptIds.includes(option.id)
 		const selOptionId = isChecked ? props.attField.options.find(selOpt=>selOpt.option===option.id).id : null
 		return (
-            <div class="field" key={option.id}>
-                <div class="control">
-                    <label class="checkbox">
+            <div className="field" key={option.id}>
+                <div className="control">
+                    <label className="checkbox">
                         <input
                             type="checkbox"
                             checked={isChecked}
